@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { nodeLessons } from '../data/nodeLessons'
+import { learningLessons, lessonPath } from '../data/nodeLessons'
 import type { ProgressState } from '../types'
 
 type BookmarksPageProps = {
@@ -11,7 +11,7 @@ export function BookmarksPage({
   progress,
   toggleBookmark,
 }: BookmarksPageProps) {
-  const bookmarks = nodeLessons.filter((lesson) =>
+  const bookmarks = learningLessons.filter((lesson) =>
     progress.bookmarks.includes(lesson.id),
   )
 
@@ -35,7 +35,7 @@ export function BookmarksPage({
                   ✕
                 </button>
               </div>
-              <Link to={`/learn/node/${lesson.slug}`}>
+              <Link to={lessonPath(lesson)}>
                 <h3>{lesson.title}</h3>
               </Link>
             </div>

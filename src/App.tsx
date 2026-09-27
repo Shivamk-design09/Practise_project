@@ -12,6 +12,7 @@ import { RoadmapPage } from './pages/RoadmapPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { CodePracticePage } from './pages/CodePracticePage'
 import { useProgress } from './hooks/useProgress'
+import { javascriptLessons } from './data/javascriptLessons'
 import './index.css'
 
 function App() {
@@ -43,7 +44,7 @@ function AppShell({ progressState }: AppShellProps) {
           <Route path="/learn" element={<Learn />} />
           <Route path="/learn/node" element={<Learn />} />
           <Route
-            path="/learn/node/:slug"
+            path="/learn/:technology/:slug"
             element={
               <LessonPage
                 progress={progressState.progress}
@@ -58,6 +59,14 @@ function AppShell({ progressState }: AppShellProps) {
           />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/practice/node" element={<PracticePage />} />
+          <Route
+            path="/practice/javascript"
+            element={
+              <CodePracticePage
+                exercise={javascriptLessons.find((lesson) => lesson.lab)?.lab}
+              />
+            }
+          />
           <Route path="/practice/code" element={<CodePracticePage />} />
           <Route
             path="/practice/node/question/:id"

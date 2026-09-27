@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { format } from 'prettier/standalone'
 import babelParser from 'prettier/plugins/babel'
+import type { InteractiveLabDefinition } from '../../types'
 
 const JS_SNIPPET = `const a = 10;
 const b = 20;
@@ -38,20 +39,27 @@ type HistoryItem = {
   createdAt: number
 }
 
+type CodePlaygroundProps = {
+  exercise?: InteractiveLabDefinition
+}
+
 const HISTORY_KEY = 'backend-lab-execution-history'
 
-export function CodePlayground() {
+export function CodePlayground({ exercise }: CodePlaygroundProps) {
   const [mode, setMode] = useState<RuntimeMode>('js')
-  const [code, setCode] = useState(JS_SNIPPET)
+  const [code, setCode] = useState(exercise?.starterCode ?? JS_SNIPPET)
   const [result, setResult] = useState<ExecutionResult | null>(null)
   const [requestError, setRequestError] = useState('')
   const [running, setRunning] = useState(false)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [controller, setController] = useState<AbortController | null>(null)
+  const [visibleHintCount, setVisibleHintCount] = useState(0)
+  const [solutionVisible, setSolutionVisible] = useState(false)
+  const [submissionResult, setSubmissionResult] = useState<boolean | null>(null)
 
   const activeSnippet = useMemo(
-    () => (mode === 'js' ? JS_SNIPPET : NODE_SNIPPET),
-    [mode],
+    () => exercise?.starterCode ?? (mode === 'js' ? JS_SNIPPET : NODE_SNIPPET),
+    [exercise, mode],
   )
 
   useEffect(() => {
@@ -68,12 +76,13 @@ export function CodePlayground() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory.slice(0, 10)))
   }
 
-  const runCode = async () => {
+  const runCode = async (): Promise<ExecutionResult | null> => {
     const nextController = new AbortController()
     setController(nextController)
     setRunning(true)
     setRequestError('')
     setResult(null)
+    setSubmissionResult(null)
 
     try {
       const response = await fetch('/api/execute', {
@@ -94,7 +103,9 @@ export function CodePlayground() {
         )
       }
       if (!response.ok) throw new Error(payload.error || 'Execution failed.')
-      setResult(payload as ExecutionResult)
+
+      const executionResult = payload as ExecutionResult
+      setResult(executionResult)
       const item: HistoryItem = {
         id: crypto.randomUUID(),
         title:
@@ -106,9 +117,12 @@ export function CodePlayground() {
         createdAt: Date.now(),
       }
       saveHistory([item, ...history.filter((entry) => entry.code !== code)])
+      return executionResult
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return
+      if (error instanceof DOMException && error.name === 'AbortError')
+        return null
       setRequestError(error instanceof Error ? error.message : String(error))
+      return null
     } finally {
       setRunning(false)
       setController(null)
@@ -120,12 +134,34 @@ export function CodePlayground() {
   const clearOutput = () => {
     setResult(null)
     setRequestError('')
+    setSubmissionResult(null)
+  }
+
+  const submitExercise = async () => {
+    if (!exercise) return
+    const executionResult = await runCode()
+    if (!executionResult) return
+
+    const actualOutput = executionResult.stdout.replace(/\r\n/g, '\n').trim()
+    const expectedOutput = exercise.expectedOutput.replace(/\r\n/g, '\n').trim()
+    setSubmissionResult(
+      executionResult.exitCode === 0 &&
+        !executionResult.stderr &&
+        actualOutput === expectedOutput,
+    )
+  }
+
+  const revealHint = () => {
+    setVisibleHintCount((count) =>
+      Math.min(exercise?.hints.length ?? 0, count + 1),
+    )
   }
 
   const formatCode = async () => {
     try {
       setCode(await format(code, { parser: 'babel', plugins: [babelParser] }))
       setRequestError('')
+      setSubmissionResult(null)
     } catch (error) {
       setRequestError(error instanceof Error ? error.message : String(error))
     }
@@ -133,6 +169,8 @@ export function CodePlayground() {
 
   const resetCode = () => {
     setCode(activeSnippet)
+    setVisibleHintCount(0)
+    setSolutionVisible(false)
     clearOutput()
   }
 
@@ -155,33 +193,49 @@ export function CodePlayground() {
     <div className="playground-shell">
       <div className="playground-header">
         <div className="playground-title-group">
-          <p className="eyebrow">Node.js Playground</p>
-          <h2>Run real Node.js code</h2>
+          <p className="eyebrow">
+            {exercise ? 'Interactive JavaScript lab' : 'Node.js Playground'}
+          </p>
+          <h2>{exercise?.title ?? 'Run real Node.js code'}</h2>
         </div>
-        <div className="mode-toggle" aria-label="Execution mode selector">
-          <button
-            type="button"
-            className={mode === 'js' ? 'mode-button active' : 'mode-button'}
-            onClick={() => switchMode('js')}
-          >
-            JavaScript
-          </button>
-          <button
-            type="button"
-            className={mode === 'node' ? 'mode-button active' : 'mode-button'}
-            onClick={() => switchMode('node')}
-          >
-            Node.js
-          </button>
-        </div>
+        {!exercise && (
+          <div className="mode-toggle" aria-label="Execution mode selector">
+            <button
+              type="button"
+              className={mode === 'js' ? 'mode-button active' : 'mode-button'}
+              onClick={() => switchMode('js')}
+            >
+              JavaScript
+            </button>
+            <button
+              type="button"
+              className={mode === 'node' ? 'mode-button active' : 'mode-button'}
+              onClick={() => switchMode('node')}
+            >
+              Node.js
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="playground-card">
+        {exercise && (
+          <div className="lab-brief">
+            <p>{exercise.objective}</p>
+            <div>
+              <strong>Expected output</strong>
+              <pre>{exercise.expectedOutput}</pre>
+            </div>
+          </div>
+        )}
+
         <div className="playground-toolbar">
           <span className="demo-badge">
-            {result?.executionMode === 'local-development'
-              ? 'Local execution mode · development only'
-              : 'Docker sandbox · Node.js runtime'}
+            {exercise
+              ? 'JavaScript · isolated Node.js sandbox'
+              : result?.executionMode === 'local-development'
+                ? 'Local execution mode · development only'
+                : 'Docker sandbox · Node.js runtime'}
           </span>
           <div className="toolbar-actions">
             <button
@@ -191,6 +245,16 @@ export function CodePlayground() {
             >
               {running ? 'Stop' : 'Run'}
             </button>
+            {exercise && (
+              <button
+                type="button"
+                className="primary-button small"
+                onClick={submitExercise}
+                disabled={running}
+              >
+                Submit
+              </button>
+            )}
             <button
               type="button"
               className="secondary-button small"
@@ -226,10 +290,65 @@ export function CodePlayground() {
           value={code}
           height="300px"
           extensions={[javascript({ jsx: true })]}
-          onChange={(value) => setCode(value)}
+          onChange={(value) => {
+            setCode(value)
+            setSubmissionResult(null)
+          }}
           theme="dark"
           aria-label="Code editor"
         />
+
+        {exercise && (
+          <div className="lab-controls">
+            <div className="toolbar-actions">
+              <button
+                type="button"
+                className="secondary-button small"
+                onClick={revealHint}
+                disabled={visibleHintCount >= exercise.hints.length}
+              >
+                Hint ({visibleHintCount}/{exercise.hints.length})
+              </button>
+              <button
+                type="button"
+                className="secondary-button small"
+                onClick={() => setSolutionVisible((visible) => !visible)}
+                aria-expanded={solutionVisible}
+              >
+                {solutionVisible ? 'Hide solution' : 'Show solution'}
+              </button>
+            </div>
+            {visibleHintCount > 0 && (
+              <ol className="lab-hints">
+                {exercise.hints.slice(0, visibleHintCount).map((hint) => (
+                  <li key={hint}>{hint}</li>
+                ))}
+              </ol>
+            )}
+            {submissionResult !== null && (
+              <p
+                className={
+                  submissionResult
+                    ? 'lab-feedback passed'
+                    : 'lab-feedback not-passed'
+                }
+                role="status"
+              >
+                {submissionResult
+                  ? 'Passed. Your output matches the expected result.'
+                  : 'Not quite. Check the output and try again.'}
+              </p>
+            )}
+            {solutionVisible && (
+              <div className="lab-solution">
+                <h3>Solution</h3>
+                <pre>
+                  <code>{exercise.solution}</code>
+                </pre>
+              </div>
+            )}
+          </div>
+        )}
 
         {requestError && (
           <div className="error-panel">

@@ -10,7 +10,9 @@ type HomeProps = {
 
 export function Home({ progress }: HomeProps) {
   const totalLessons = nodeLessons.length
-  const completedCount = progress.completedLessons.length
+  const completedCount = nodeLessons.filter((lesson) =>
+    progress.completedLessons.includes(lesson.id),
+  ).length
 
   const dashboardRows = [
     [

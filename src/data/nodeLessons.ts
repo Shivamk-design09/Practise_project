@@ -1,4 +1,7 @@
 import type { Lesson } from '../types'
+import { technologyLessons } from './technologyLessons'
+import { javascriptLessons } from './javascriptLessons'
+import { reactTopicLessons } from './reactTopicLessons'
 
 export const nodeLessons: Lesson[] = [
   {
@@ -47,6 +50,37 @@ console.log(process.version)`,
         code: `const greeting = 'hello';\nconsole.log(greeting.toUpperCase())`,
         output: `HELLO`,
         note: 'V8 is the engine, while Node.js adds the platform around it.',
+      },
+    ],
+  },
+  {
+    id: 'why-nodejs',
+    slug: 'why-nodejs',
+    title: 'Why Node.js?',
+    category: 'Node.js Fundamentals',
+    description:
+      'Learn why Node.js is a strong fit for network services, command-line tools, and JavaScript across the stack.',
+    section: '01. Node.js Fundamentals',
+    level: 2,
+    progress: 0,
+    toc: [
+      'JavaScript on the server',
+      'Event-driven I/O',
+      'When to choose Node.js',
+    ],
+    sections: [
+      {
+        heading: 'Why use Node.js?',
+        explanation: [
+          'Node.js lets teams use JavaScript beyond the browser, including for APIs, command-line tools, and background services.',
+          'Its event-driven, non-blocking I/O model is useful for applications that spend much of their time waiting on network, database, or file operations. A single process can keep many such operations in flight without dedicating a JavaScript thread to each connection.',
+          'Using JavaScript across the client and server can also make it easier to share language knowledge and some validation or data-model code between them.',
+        ],
+        note: 'Node.js is not automatically the best choice for every workload. CPU-heavy work needs careful design so it does not block the event loop.',
+        interviewQuestion:
+          'What kinds of workloads are a good fit for Node.js?',
+        practiceQuestion:
+          'Why can non-blocking I/O help a server handle many open connections?',
       },
     ],
   },
@@ -127,6 +161,82 @@ console.log(typeof globalThis.process)`,
           'This separation is why Node.js can stay single-threaded for JavaScript execution while supporting asynchronous I/O.',
         ],
         note: 'A common interview point: V8 handles JavaScript execution; libuv manages event loop and async I/O coordination.',
+      },
+    ],
+  },
+  {
+    id: 'runtime-environment',
+    slug: 'runtime-environment',
+    title: 'Runtime Environment',
+    category: 'Node.js Fundamentals',
+    description:
+      'See what a runtime provides around the JavaScript language and how Node.js starts and runs a program.',
+    section: '01. Node.js Fundamentals',
+    level: 6,
+    progress: 0,
+    toc: ['Language and runtime', 'Node.js globals', 'Program lifecycle'],
+    sections: [
+      {
+        heading: 'The runtime around JavaScript',
+        explanation: [
+          'JavaScript defines the language: its syntax, values, functions, and objects. A runtime supplies the host environment that loads and executes a program.',
+          'Node.js combines V8 with APIs for tasks such as reading files, creating servers, accessing environment variables, and scheduling asynchronous work.',
+          'When Node.js starts a script, it evaluates the entry point, handles pending work such as timers or I/O, and normally exits after the event loop has no work left to perform.',
+        ],
+        code: `console.log(process.argv[1])\nconsole.log(process.platform)`,
+        output: `path to the script\ncurrent operating system`,
+        note: 'Globals and available APIs depend on the host runtime; browser-only APIs such as document are not provided by Node.js.',
+      },
+    ],
+  },
+  {
+    id: 'node-internals',
+    slug: 'node-internals',
+    title: 'Node.js Internals',
+    category: 'Node.js Fundamentals',
+    description:
+      'Connect JavaScript execution, Node.js native bindings, libuv, and operating-system services.',
+    section: '01. Node.js Fundamentals',
+    level: 7,
+    progress: 0,
+    toc: ['JavaScript layer', 'Native bindings', 'libuv and the OS'],
+    sections: [
+      {
+        heading: 'How a Node.js operation reaches the system',
+        explanation: [
+          'A Node.js API begins at the JavaScript layer. For operations that need system access, Node.js native bindings connect that API to lower-level implementation code.',
+          'Depending on the operation and platform, work may be handled by the operating system directly or coordinated through libuv and its worker pool. Completion is then reported back to JavaScript through the event loop.',
+          'These layers let application code use a consistent API while Node.js adapts to platform-specific facilities underneath.',
+        ],
+        note: 'Not every asynchronous API uses the libuv thread pool; network I/O is commonly driven by operating-system readiness mechanisms.',
+        interviewQuestion: 'What roles do V8 and libuv play inside Node.js?',
+      },
+    ],
+  },
+  {
+    id: 'node-vs-javascript',
+    slug: 'node-vs-javascript',
+    title: 'Node.js vs JavaScript',
+    category: 'Node.js Fundamentals',
+    description:
+      'Separate the JavaScript language from Node.js, the runtime that executes it and adds host APIs.',
+    section: '01. Node.js Fundamentals',
+    level: 8,
+    progress: 0,
+    toc: ['The JavaScript language', 'The Node.js runtime', 'Host APIs'],
+    sections: [
+      {
+        heading: 'Language versus runtime',
+        explanation: [
+          'JavaScript is a programming language. By itself, it does not specify which host services a program can use.',
+          'Node.js is one runtime for JavaScript. It uses V8 to execute the language and exposes Node-specific APIs for files, networking, processes, and other system tasks.',
+          'The same JavaScript language can run in a browser or in Node.js, but the available host APIs differ. Portable code should rely on shared language features or explicitly account for its runtime.',
+        ],
+        code: `console.log(typeof document)\nconsole.log(typeof process)`,
+        output: `undefined\nobject`,
+        note: 'Modern Node.js also supports some web-standard APIs, so runtime differences should be checked API by API rather than assumed wholesale.',
+        misconception:
+          'Node.js is not a separate programming language; it is a runtime for JavaScript.',
       },
     ],
   },
@@ -633,8 +743,306 @@ console.log(typeof globalThis.process)`,
       },
     ],
   },
+  {
+    id: 'osi-model',
+    slug: 'osi-model',
+    title: 'OSI Model',
+    category: 'Networking Fundamentals',
+    description:
+      'Use the seven-layer OSI model to understand how data moves between applications and network hardware.',
+    section: '07. Networking Fundamentals',
+    level: 26,
+    progress: 0,
+    toc: ['Seven layers', 'Encapsulation', 'OSI and TCP/IP'],
+    sections: [
+      {
+        heading: 'A map of network responsibilities',
+        explanation: [
+          'The OSI model is a teaching model that separates communication into seven layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application.',
+          'The lower layers move signals and packets between devices. The Network layer routes between networks, the Transport layer delivers data to application ports, and the upper layers describe application data and communication context.',
+          'Real Internet protocols do not always fit neatly into one OSI layer. TCP/IP is a practical model with fewer layers; use OSI as a vocabulary for reasoning, not as a strict implementation diagram.',
+        ],
+        note: 'Examples include Ethernet and Wi-Fi at the link layer, IP at the network layer, TCP or UDP at transport, and HTTP at the application layer.',
+        practiceQuestion:
+          'Which OSI layer uses port numbers to deliver data to the right process?',
+      },
+      {
+        heading: 'Encapsulation',
+        explanation: [
+          'As application data is sent, each layer adds the information needed for its part of the journey. A transport segment is carried inside an IP packet, which is carried inside a link-layer frame.',
+          'At the receiving end, each layer processes and removes its own header before passing the remaining data upward.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'tcp-and-ports',
+    slug: 'tcp-and-ports',
+    title: 'TCP and Ports',
+    category: 'Networking Fundamentals',
+    description:
+      'Learn how TCP provides ordered byte streams and how port numbers identify network services.',
+    section: '07. Networking Fundamentals',
+    level: 27,
+    progress: 0,
+    toc: [
+      'IP addresses and ports',
+      'Reliable byte streams',
+      'Connection lifecycle',
+    ],
+    sections: [
+      {
+        heading: 'Deliver data to the right service',
+        explanation: [
+          'An IP address identifies a network interface for routing. A TCP port identifies an endpoint on a host, helping the operating system deliver incoming data to the correct socket.',
+          'TCP provides a reliable, ordered byte stream between endpoints. It retransmits lost data and applies flow and congestion control, but it does not preserve application message boundaries.',
+          'Ports are 16-bit numbers from 0 through 65535. A server listens on a port, while each connection is identified by its endpoint addresses and ports.',
+        ],
+        note: 'TCP does not encrypt traffic. Applications commonly use TLS above TCP when confidentiality and peer authentication are required.',
+        interviewQuestion:
+          'Why does TCP provide a byte stream instead of separate messages?',
+      },
+    ],
+  },
+  {
+    id: 'tcp-three-way-handshake',
+    slug: 'tcp-three-way-handshake',
+    title: 'TCP Three-Way Handshake',
+    category: 'Networking Fundamentals',
+    description:
+      'Follow SYN, SYN-ACK, and ACK as two hosts establish a TCP connection.',
+    section: '07. Networking Fundamentals',
+    level: 28,
+    progress: 0,
+    toc: ['SYN', 'SYN-ACK', 'ACK', 'After connection setup'],
+    sections: [
+      {
+        heading: 'Establishing a TCP connection',
+        explanation: [
+          'The client starts by sending SYN with an initial sequence number. This requests a connection and tells the server where the client sequence space begins.',
+          'The server responds with SYN-ACK: it acknowledges the client sequence number and provides its own initial sequence number.',
+          'The client replies with ACK. Both sides have now exchanged initial sequence information and can send application data.',
+        ],
+        note: 'The handshake synchronizes TCP state; it does not encrypt data or prove a human identity. TLS performs encryption and certificate-based peer authentication above TCP.',
+        practiceQuestion:
+          'What information does the server acknowledge in its SYN-ACK?',
+      },
+    ],
+  },
+  {
+    id: 'udp',
+    slug: 'udp',
+    title: 'UDP',
+    category: 'Networking Fundamentals',
+    description:
+      'Understand connectionless datagrams and why applications may choose UDP over TCP.',
+    section: '07. Networking Fundamentals',
+    level: 29,
+    progress: 0,
+    toc: ['Datagrams', 'Trade-offs', 'Common uses'],
+    sections: [
+      {
+        heading: 'A lightweight transport protocol',
+        explanation: [
+          'UDP sends independent datagrams between IP endpoints. It includes source and destination ports, length, and a checksum, but no connection handshake or built-in retransmission and ordering.',
+          'This smaller transport contract can be useful when an application values low overhead, tolerates some loss, or implements its own reliability and congestion behavior.',
+          'Common examples include real-time media, DNS queries, and protocols such as QUIC. A UDP datagram may be lost, duplicated, or arrive out of order, so applications must account for those possibilities.',
+        ],
+        misconception:
+          'UDP is not inherently secure or guaranteed to be faster in every situation. Security and reliability must come from the application protocol when needed.',
+      },
+    ],
+  },
+  {
+    id: 'quic',
+    slug: 'quic',
+    title: 'QUIC',
+    category: 'Networking Fundamentals',
+    description:
+      'Explore the secure, multiplexed transport protocol used by HTTP/3 over UDP.',
+    section: '07. Networking Fundamentals',
+    level: 30,
+    progress: 0,
+    toc: [
+      'Built on UDP',
+      'TLS 1.3 security',
+      'Streams and connection migration',
+    ],
+    sections: [
+      {
+        heading: 'Modern transport over UDP',
+        explanation: [
+          'QUIC is a transport protocol carried in UDP datagrams. It implements reliable streams, congestion control, and encryption instead of relying on TCP for those features.',
+          'QUIC integrates a TLS 1.3 handshake and supports multiple independent streams. Loss affecting one stream need not block delivery to every other stream as it can with a single TCP byte stream.',
+          'Connection IDs can help a QUIC connection survive some changes in the client network path, such as switching between Wi-Fi and cellular. HTTP/3 uses QUIC.',
+        ],
+        note: 'QUIC is not simply a faster UDP setting; it is a complete transport protocol with its own connection and security machinery.',
+      },
+    ],
+  },
+  {
+    id: 'ip-and-routing',
+    slug: 'ip-and-routing',
+    title: 'IP and Routing',
+    category: 'Networking Fundamentals',
+    description:
+      'Learn how IPv4 and IPv6 addresses help routers forward packets between networks.',
+    section: '07. Networking Fundamentals',
+    level: 31,
+    progress: 0,
+    toc: ['IP addresses', 'Routers and next hops', 'ICMP and diagnostics'],
+    sections: [
+      {
+        heading: 'Move packets between networks',
+        explanation: [
+          'The Internet Protocol provides addressing and packet forwarding across interconnected networks. IPv4 uses 32-bit addresses; IPv6 uses 128-bit addresses and a much larger address space.',
+          'A host checks whether a destination is on its local network. For a remote destination, it sends the packet to a router, which consults its routing table to choose a next hop.',
+          'IP offers best-effort delivery: it does not by itself promise that packets arrive, arrive once, or arrive in order. ICMP carries network diagnostics and error information, while tools such as ping use ICMP echo messages where permitted.',
+        ],
+        note: 'IPsec is a suite for protecting IP traffic. It is separate from TLS, which typically protects application traffic between endpoints.',
+        practiceQuestion:
+          'What does a router use to decide where to forward an IP packet?',
+      },
+    ],
+  },
+  {
+    id: 'tls-and-encryption',
+    slug: 'tls-and-encryption',
+    title: 'TLS and Encryption',
+    category: 'Networking Fundamentals',
+    description:
+      'Understand how TLS protects data in transit and how certificates help authenticate servers.',
+    section: '07. Networking Fundamentals',
+    level: 32,
+    progress: 0,
+    toc: ['Confidentiality and integrity', 'Certificates', 'TLS handshake'],
+    sections: [
+      {
+        heading: 'Protecting a connection with TLS',
+        explanation: [
+          'TLS provides encryption, integrity checks, and usually server authentication for data exchanged over a connection. HTTPS is HTTP carried over TLS.',
+          'During the handshake, peers negotiate cryptographic settings and establish shared keys. A server presents a certificate that the client validates against trusted certificate authorities and the requested hostname.',
+          'TLS commonly runs over TCP for protocols such as HTTPS over HTTP/1.1 or HTTP/2. QUIC integrates TLS 1.3 as part of its transport design.',
+        ],
+        note: 'SSL is obsolete and should not be enabled. Use current TLS versions and keep certificate validation enabled.',
+        misconception:
+          'Encryption alone does not guarantee that you connected to the intended server; certificate and hostname validation matter.',
+      },
+    ],
+  },
+  {
+    id: 'connections-and-sessions',
+    slug: 'connections-and-sessions',
+    title: 'Connections and Sessions',
+    category: 'Networking Fundamentals',
+    description:
+      'Separate transport connections from application sessions and learn how each is created and reused.',
+    section: '07. Networking Fundamentals',
+    level: 33,
+    progress: 0,
+    toc: [
+      'Transport connection',
+      'Application session',
+      'Keep-alive and proxies',
+    ],
+    sections: [
+      {
+        heading: 'Connection is not the same as session',
+        explanation: [
+          'A transport connection is communication state maintained by a protocol such as TCP or QUIC. A TCP connection is identified by its endpoint addresses and ports and is closed when either side or the network stack ends it.',
+          'An application session represents context meaningful to an application, such as a signed-in user or a multi-step workflow. It can persist across multiple transport connections using a cookie or token.',
+          'HTTP keep-alive allows requests to reuse a connection. Proxies and load balancers can terminate one connection and establish another, so applications should not assume that a client connection maps directly to a server-side connection.',
+        ],
+        note: 'Session-layer examples such as SIP or SOCKS describe different kinds of coordination; the OSI session layer is a conceptual model, not a single universal service.',
+      },
+    ],
+  },
+  {
+    id: 'ethernet-and-wifi',
+    slug: 'ethernet-and-wifi',
+    title: 'Ethernet and Wi-Fi',
+    category: 'Networking Fundamentals',
+    description:
+      'See how local links carry frames between devices over wired Ethernet or wireless LANs.',
+    section: '07. Networking Fundamentals',
+    level: 34,
+    progress: 0,
+    toc: ['Frames and MAC addresses', 'Switches', 'Wireless links'],
+    sections: [
+      {
+        heading: 'Communication on a local link',
+        explanation: [
+          'Ethernet and Wi-Fi carry link-layer frames across a local network. Frames use link-layer addressing to reach a nearby interface; switches use this information to forward Ethernet traffic within a LAN.',
+          'Wi-Fi uses radio and the IEEE 802.11 family to connect devices to a wireless access point. The access point typically bridges wireless devices to the local network.',
+          'A MAC address is commonly represented as six hexadecimal octets. It identifies a link-layer interface for local delivery, while IP addresses are used for routing between networks.',
+        ],
+        note: 'A MAC address is not a reliable identity or security credential; addresses can be changed or randomized by devices.',
+      },
+    ],
+  },
+  {
+    id: 'arp-and-mac-addresses',
+    slug: 'arp-and-mac-addresses',
+    title: 'ARP and MAC Addresses',
+    category: 'Networking Fundamentals',
+    description:
+      'Learn how IPv4 hosts discover a local link address before sending a frame.',
+    section: '07. Networking Fundamentals',
+    level: 35,
+    progress: 0,
+    toc: ['Neighbor lookup', 'ARP cache', 'IPv6 Neighbor Discovery'],
+    sections: [
+      {
+        heading: 'Finding the next link-layer destination',
+        explanation: [
+          'When an IPv4 host needs to send a packet on its local network, it needs the destination MAC address for the next hop. ARP asks the local network which interface owns a particular IPv4 address.',
+          'The result is stored temporarily in an ARP cache, which avoids repeating the lookup for every packet. On Windows and Linux, `arp -a` can display cached IPv4 neighbor entries.',
+          'If the destination IP is remote, the host resolves the MAC address of its default gateway instead of looking for the remote host on the local link. IPv6 uses Neighbor Discovery Protocol rather than ARP.',
+        ],
+        note: 'Because classic ARP has no authentication, local networks can be exposed to spoofed replies. Network protections and encrypted application protocols address different parts of that risk.',
+      },
+    ],
+  },
+  {
+    id: 'vlans',
+    slug: 'vlans',
+    title: 'VLANs',
+    category: 'Networking Fundamentals',
+    description:
+      'Understand how switches use VLAN tags to separate logical networks over shared infrastructure.',
+    section: '07. Networking Fundamentals',
+    level: 36,
+    progress: 0,
+    toc: ['VLAN IDs', 'Access and trunk ports', 'Routing between VLANs'],
+    sections: [
+      {
+        heading: 'Segment a switched network',
+        explanation: [
+          'A Virtual LAN divides a switched network into separate logical broadcast domains. Devices in different VLANs are isolated at Layer 2 unless a router or Layer 3 switch routes between them.',
+          'On a trunk link, Ethernet frames can carry an IEEE 802.1Q VLAN tag so multiple VLANs can cross the same physical link. An access port usually associates an endpoint with one VLAN and sends ordinary untagged frames to it.',
+          'VLANs help organize networks and limit broadcast scope, but they are not a substitute for firewalls or other security controls.',
+        ],
+        practiceQuestion:
+          'What must happen for two devices in different VLANs to communicate?',
+      },
+    ],
+  },
 ]
 
+export const learningLessons: Lesson[] = [
+  ...javascriptLessons,
+  ...reactTopicLessons,
+  ...nodeLessons,
+  ...technologyLessons.map((lesson) => ({
+    ...lesson,
+    technology: lesson.technology ?? lesson.slug,
+  })),
+]
+
+export function lessonPath(lesson: Lesson) {
+  return `/learn/${lesson.technology ?? 'node'}/${lesson.slug}`
+}
+
 export const lessonBySlug = Object.fromEntries(
-  nodeLessons.map((lesson) => [lesson.slug, lesson]),
+  learningLessons.map((lesson) => [lesson.slug, lesson]),
 )

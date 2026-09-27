@@ -648,6 +648,88 @@ p {
 .lesson-section p {
   margin-bottom: 0.9rem;
 }
+.lesson-section h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+}
+.lesson-detail {
+  margin: 0.9rem 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--border);
+  color: var(--muted);
+}
+.lesson-detail p {
+  margin: 0;
+}
+.lesson-detail ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.lesson-detail li + li {
+  margin-top: 0.35rem;
+}
+.lesson-section .playground-shell {
+  margin-top: 1.2rem;
+}
+.lab-brief {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-soft);
+  color: var(--muted);
+}
+.lab-brief p {
+  margin: 0;
+}
+.lab-brief strong {
+  color: var(--text);
+}
+.lab-brief pre,
+.lab-solution pre {
+  margin: 0.5rem 0 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  color: var(--text);
+  font-family: var(--mono);
+  line-height: 1.6;
+}
+.lab-controls {
+  display: grid;
+  gap: 0.8rem;
+}
+.lab-hints {
+  margin: 0;
+  padding: 0.85rem 1rem 0.85rem 2.2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+}
+.lab-hints li + li {
+  margin-top: 0.4rem;
+}
+.lab-feedback {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--border);
+  background: var(--bg-soft);
+}
+.lab-feedback.passed {
+  border-left-color: var(--success);
+}
+.lab-feedback.not-passed {
+  border-left-color: var(--warning);
+}
+.lab-solution {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+}
+.primary-button.small {
+  padding: 0.55rem 0.8rem;
+  font-size: 0.82rem;
+}
 .code-block,
 .output-box {
   background: rgba(15, 23, 42, 0.85);

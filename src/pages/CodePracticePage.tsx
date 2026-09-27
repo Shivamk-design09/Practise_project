@@ -1,9 +1,14 @@
 import { CodePlayground } from '../components/ui/CodePlayground'
+import type { InteractiveLabDefinition } from '../types'
 
-export function CodePracticePage() {
+type CodePracticePageProps = {
+  exercise?: InteractiveLabDefinition
+}
+
+export function CodePracticePage({ exercise }: CodePracticePageProps) {
   return (
     <div className="page-content">
-      <CodePlayground />
+      <CodePlayground exercise={exercise} />
     </div>
   )
 }

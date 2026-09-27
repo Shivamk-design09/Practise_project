@@ -10,7 +10,12 @@ import {
   UserCircle2,
   X,
 } from 'lucide-react'
-import { nodeLessons } from '../../data/nodeLessons'
+import {
+  learningLessons,
+  lessonBySlug,
+  lessonPath,
+  nodeLessons,
+} from '../../data/nodeLessons'
 import type { ProgressState } from '../../types'
 
 type SidebarItem = {
@@ -28,8 +33,53 @@ type SidebarGroup = {
 
 const sidebarGroups: SidebarGroup[] = [
   {
-    title: 'BACKEND',
+    title: 'LEARN',
     items: [
+      {
+        label: '01. JavaScript',
+        children: [
+          'JavaScript Fundamentals',
+          'JavaScript Core Concepts',
+          'Asynchronous JavaScript',
+          'Advanced JavaScript',
+          'JavaScript Interview Practice',
+        ],
+      },
+      {
+        label: '02. React',
+        children: [
+          'React Overview',
+          'Components',
+          'JSX',
+          'Props',
+          'State and Events',
+          'Conditional Rendering',
+          'Lists and Keys',
+          'Forms',
+          'useState',
+          'useEffect',
+          'useRef',
+          'useMemo',
+          'useCallback',
+          'useContext',
+          'Custom Hooks',
+          'Rendering and Re-rendering',
+          'Reconciliation and Virtual DOM',
+          'Component Lifecycle',
+          'Context API',
+          'Redux Toolkit',
+          'Zustand',
+          'React Query',
+          'React Performance',
+          'React.memo',
+          'Lazy Loading and Code Splitting',
+          'Virtualization',
+          'Lab: Login Form',
+          'Lab: CRUD Interface',
+          'Lab: Search and Pagination',
+          'Lab: Infinite Scroll, Upload, and Protected UI',
+        ],
+      },
       { label: 'Node.js', level: 60 },
       {
         label: '01. Node.js Fundamentals',
@@ -125,25 +175,29 @@ const sidebarGroups: SidebarGroup[] = [
           'Connection Pooling',
         ],
       },
-      { label: '07. Express.js', comingSoon: true },
-      { label: '08. Databases', comingSoon: true },
-      { label: '09. Authentication', comingSoon: true },
-      { label: '10. System Design', comingSoon: true },
-    ],
-  },
-  {
-    title: 'PRACTICE',
-    items: [
-      { label: 'JavaScript', path: '/practice/code' },
-      { label: 'Node.js', path: '/practice/code' },
-      { label: 'TypeScript', comingSoon: true },
-      { label: 'React', comingSoon: true },
-      { label: 'Express', comingSoon: true },
-      { label: 'MongoDB', comingSoon: true },
-      { label: 'PostgreSQL', comingSoon: true },
-      { label: 'Redis', comingSoon: true },
-      { label: 'Docker', comingSoon: true },
-      { label: 'System Design', comingSoon: true },
+      {
+        label: '07. Networking Fundamentals',
+        children: [
+          'OSI Model',
+          'TCP and Ports',
+          'TCP Three-Way Handshake',
+          'UDP',
+          'QUIC',
+          'IP and Routing',
+          'TLS and Encryption',
+          'Connections and Sessions',
+          'Ethernet and Wi-Fi',
+          'ARP and MAC Addresses',
+          'VLANs',
+        ],
+      },
+      { label: '08. Express.js', path: '/learn/node/express' },
+      {
+        label: '09. Databases',
+        children: ['MongoDB', 'PostgreSQL', 'Redis'],
+      },
+      { label: '10. Authentication', comingSoon: true },
+      { label: '11. System Design', path: '/learn/node/system-design' },
     ],
   },
 ]
@@ -158,8 +212,17 @@ export function Layout({ children, progress }: LayoutProps) {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [expandedSidebarGroups, setExpandedSidebarGroups] = useState<
+    Record<string, boolean>
+  >({})
   const location = useLocation()
   const navigate = useNavigate()
+  const currentLessonSlug = location.pathname.startsWith('/learn/')
+    ? location.pathname.split('/').at(-1)
+    : undefined
+  const currentLesson = currentLessonSlug
+    ? lessonBySlug[currentLessonSlug]
+    : undefined
 
   useEffect(() => {
     document.body.dataset.theme = theme
@@ -172,9 +235,9 @@ export function Layout({ children, progress }: LayoutProps) {
   const lessonRouteMap = useMemo(
     () =>
       Object.fromEntries(
-        nodeLessons.map((lesson) => [
+        learningLessons.map((lesson) => [
           lesson.title.toLowerCase().trim(),
-          `/learn/node/${lesson.slug}`,
+          lessonPath(lesson),
         ]),
       ),
     [],
@@ -182,18 +245,14 @@ export function Layout({ children, progress }: LayoutProps) {
 
   const resolveLessonPath = (label: string) => {
     const normalizedLabel = label.toLowerCase().trim()
-    return (
-      lessonRouteMap[normalizedLabel] ||
-      lessonRouteMap['what is node.js?'] ||
-      `/learn/node/${nodeLessons[0].slug}`
-    )
+    return lessonRouteMap[normalizedLabel]
   }
 
   const searchData = useMemo(() => {
-    const items = nodeLessons.map((lesson) => ({
+    const items = learningLessons.map((lesson) => ({
       type: 'lesson',
       label: lesson.title,
-      path: `/learn/node/${lesson.slug}`,
+      path: lessonPath(lesson),
     }))
     const practiceItems = [
       {
@@ -209,6 +268,14 @@ export function Layout({ children, progress }: LayoutProps) {
     navigate(path)
     setSearchOpen(false)
   }
+
+  const nodeProgress = Math.round(
+    (nodeLessons.filter((lesson) =>
+      progress.completedLessons.includes(lesson.id),
+    ).length /
+      nodeLessons.length) *
+      100,
+  )
 
   return (
     <div className="app-shell">
@@ -299,20 +366,10 @@ export function Layout({ children, progress }: LayoutProps) {
             <div className="sidebar-card">
               <div className="sidebar-title-row">
                 <span>Node.js</span>
-                <span>
-                  {Math.round(
-                    (progress.completedLessons.length / nodeLessons.length) *
-                      100,
-                  )}
-                  %
-                </span>
+                <span>{nodeProgress}%</span>
               </div>
               <div className="progress-track">
-                <span
-                  style={{
-                    width: `${Math.round((progress.completedLessons.length / nodeLessons.length) * 100)}%`,
-                  }}
-                />
+                <span style={{ width: `${nodeProgress}%` }} />
               </div>
             </div>
 
@@ -332,26 +389,46 @@ export function Layout({ children, progress }: LayoutProps) {
                   </button>
                 ) : item.children ? (
                   <div className="sidebar-group">
-                    <div className="sidebar-group-label">
+                    <button
+                      type="button"
+                      className="sidebar-group-label"
+                      aria-expanded={expandedSidebarGroups[item.label] ?? true}
+                      aria-controls={`sidebar-children-${itemIndex}`}
+                      onClick={() =>
+                        setExpandedSidebarGroups((groups) => ({
+                          ...groups,
+                          [item.label]: !(groups[item.label] ?? true),
+                        }))
+                      }
+                    >
                       <span>{item.label}</span>
                       <ChevronDown size={14} />
-                    </div>
-                    <ul className="sidebar-children">
-                      {item.children.map((child) => (
-                        <li key={child}>
-                          <button
-                            type="button"
-                            onClick={() => navigate(resolveLessonPath(child))}
-                          >
-                            {child}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    </button>
+                    {(expandedSidebarGroups[item.label] ?? true) ? (
+                      <ul
+                        className="sidebar-children"
+                        id={`sidebar-children-${itemIndex}`}
+                      >
+                        {item.children.map((child) => (
+                          <li key={child}>
+                            <button
+                              type="button"
+                              disabled={!resolveLessonPath(child)}
+                              onClick={() => {
+                                const path = resolveLessonPath(child)
+                                if (path) navigate(path)
+                              }}
+                            >
+                              {child}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </div>
                 ) : (
                   <Link
-                    to="/learn/node/what-is-nodejs"
+                    to={item.path ?? '/learn/node/what-is-nodejs'}
                     className="sidebar-link"
                   >
                     {item.label}
@@ -360,54 +437,23 @@ export function Layout({ children, progress }: LayoutProps) {
               </div>
             ))}
           </div>
-
-          <div className="sidebar-block mt-1">
-            <div className="sidebar-header">Practice</div>
-            {sidebarGroups[1].items.map((item, idx) =>
-              item.path ? (
-                <Link key={idx} to={item.path} className="sidebar-link">
-                  <span>{item.label}</span>
-                </Link>
-              ) : (
-                <button
-                  key={idx}
-                  type="button"
-                  className="sidebar-link coming-soon"
-                  onClick={() => window.alert('This module is coming soon.')}
-                >
-                  <span>{item.label}</span>
-                </button>
-              ),
-            )}
-          </div>
         </aside>
 
         <main className="main-panel">{children}</main>
 
         <aside className="toc-panel">
-          <div className="toc-card">
-            <h3>On this page</h3>
-            <ul>
-              <li>
-                <a href="#what-is-nodejs">What is Node.js?</a>
-              </li>
-              <li>
-                <a href="#v8-engine">V8 Engine</a>
-              </li>
-              <li>
-                <a href="#libuv">libuv</a>
-              </li>
-              <li>
-                <a href="#event-loop">Event Loop</a>
-              </li>
-              <li>
-                <a href="#thread-pool">Thread Pool</a>
-              </li>
-              <li>
-                <a href="#os">OS</a>
-              </li>
-            </ul>
-          </div>
+          {currentLesson?.sections.length ? (
+            <div className="toc-card">
+              <h3>On this page</h3>
+              <ul>
+                {currentLesson.sections.map((section, index) => (
+                  <li key={`${index}-${section.heading}`}>
+                    <a href={`#lesson-section-${index}`}>{section.heading}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </aside>
       </div>
 
