@@ -254,6 +254,11 @@ body[data-theme='light'] .topbar {
   background: var(--bg-soft);
   color: var(--text);
 }
+.sidebar-children button.active {
+  background: var(--bg-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
 .coming-soon {
   color: var(--muted);
 }

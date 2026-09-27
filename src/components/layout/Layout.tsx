@@ -191,13 +191,230 @@ const sidebarGroups: SidebarGroup[] = [
           'VLANs',
         ],
       },
-      { label: '08. Express.js', path: '/learn/node/express' },
       {
-        label: '09. Databases',
-        children: ['MongoDB', 'PostgreSQL', 'Redis'],
+        label: '08. Express.js',
+        children: [
+          'Express Fundamentals',
+          'Routing & HTTP Methods',
+          'Request & Response',
+          'Middleware Architecture',
+          'Express Router',
+          'Controllers & Services',
+          'Error Handling',
+          'Centralized Error Handling',
+          'Validation & Sanitization',
+          'Authentication & Route Protection',
+          'File Uploads',
+          'Production Best Practices',
+        ],
       },
-      { label: '10. Authentication', comingSoon: true },
-      { label: '11. System Design', path: '/learn/node/system-design' },
+      {
+        label: '09. API Development',
+        children: [
+          'REST API Fundamentals',
+          'CRUD Operations',
+          'HTTP Methods Deep Dive',
+          'HTTP Status Codes',
+          'Headers & Content Types',
+          'Query & Route Parameters',
+          'Request Body Parsing',
+          'Pagination',
+          'Filtering & Sorting',
+          'Searching',
+          'API Versioning',
+        ],
+      },
+      {
+        label: '10. Authentication',
+        children: [
+          'Password Hashing',
+          'JWT Fundamentals',
+          'Access Tokens',
+          'Refresh Tokens',
+          'Cookies & Sessions',
+          'OAuth Basics',
+          'RBAC',
+          'Authentication vs Authorization',
+        ],
+      },
+      {
+        label: '11. Security',
+        children: [
+          'CORS Deep Dive',
+          'Rate Limiting',
+          'Helmet & Security Headers',
+          'Input Validation',
+          'SQL Injection',
+          'NoSQL Injection',
+          'XSS Prevention',
+          'CSRF Protection',
+          'Secure Cookies',
+          'Password Security',
+        ],
+      },
+      {
+        label: '12. Production',
+        children: [
+          'Logging',
+          'Error Monitoring',
+          'Graceful Shutdown',
+          'Environment Configuration',
+          'API Performance',
+          'Caching Strategies',
+          'Load Handling',
+        ],
+      },
+      { label: 'Databases', level: 60 },
+      {
+        label: '13. MongoDB',
+        children: [
+          'Documents & Collections',
+          'BSON Data Types',
+          'CRUD Operations',
+          'Query Operators',
+          'Indexes',
+          'Compound Indexes',
+          'Aggregation Framework',
+          'Aggregation Pipeline Stages',
+          'Lookup & Joins',
+          'Transactions',
+          'Replication',
+          'Sharding',
+          'Schema Design Patterns',
+          'Embedding vs Referencing',
+          'MongoDB Performance',
+          'Mongoose ODM',
+          'Mongoose Schemas & Models',
+          'Mongoose Middleware',
+          'Population & References',
+          'Lab: User System',
+          'Lab: Product System',
+          'Lab: Order System',
+          'Lab: Search Implementation',
+          'Lab: Pagination System',
+          'Lab: Aggregation Analytics',
+        ],
+      },
+      {
+        label: '14. PostgreSQL',
+        children: [
+          'Relational Database Concepts',
+          'Tables, Rows & Columns',
+          'Primary & Foreign Keys',
+          'Constraints',
+          'SELECT Queries',
+          'INSERT, UPDATE, DELETE',
+          'JOINs',
+          'GROUP BY & HAVING',
+          'Subqueries',
+          'Common Table Expressions',
+          'Window Functions',
+          'Indexes',
+          'Transactions & ACID',
+          'Isolation Levels',
+          'Locks',
+          'Normalization',
+          'Denormalization',
+          'Query Optimization',
+          'EXPLAIN & EXPLAIN ANALYZE',
+          'Lab: User Database',
+          'Lab: E-Commerce Database',
+          'Lab: Booking System',
+          'Lab: Banking Transactions',
+          'Lab: Analytics Queries',
+        ],
+      },
+      {
+        label: '15. Redis',
+        children: [
+          'What is Redis?',
+          'In-Memory Architecture',
+          'Redis Event Loop',
+          'Strings',
+          'Lists',
+          'Sets',
+          'Sorted Sets',
+          'Hashes',
+          'TTL & Expiration',
+          'Cache Patterns',
+          'Cache-Aside Pattern',
+          'Sessions with Redis',
+          'Rate Limiting with Redis',
+          'Distributed Locks',
+          'Pub/Sub',
+          'Streams',
+          'Queues',
+          'Redis Persistence',
+          'Redis Replication',
+          'Redis Cluster',
+          'Lab: API Caching',
+          'Lab: Rate Limiter',
+          'Lab: Session Store',
+          'Lab: OTP Expiry',
+          'Lab: Distributed Lock',
+          'Lab: Real-time Notifications',
+        ],
+      },
+      { label: 'DevOps & Architecture', level: 60 },
+      {
+        label: '16. Docker',
+        children: [
+          'Containers & Images',
+          'Dockerfile',
+          'Docker Commands',
+          'Volumes',
+          'Networks',
+          'Environment Variables & Port Mapping',
+          'Docker Compose',
+          'Multi-Stage Builds',
+          'Dockerizing Node.js',
+          'Dockerizing React',
+          'PostgreSQL with Docker',
+          'Redis with Docker',
+          'Container Networking',
+          'Production Optimization',
+          'Lab: Dockerize Node API',
+          'Lab: Node + PostgreSQL',
+          'Lab: Node + Redis',
+          'Lab: Full-Stack Docker Compose',
+        ],
+      },
+      {
+        label: '17. System Design',
+        children: [
+          'What is System Design?',
+          'Scalability',
+          'Availability & Reliability',
+          'Latency & Throughput',
+          'CAP Theorem',
+          'Consistency Patterns',
+          'Load Balancing',
+          'Reverse Proxy',
+          'API Gateway',
+          'CDN',
+          'Caching Strategies',
+          'Database Scaling',
+          'Replication',
+          'Sharding',
+          'Message Queues',
+          'Pub/Sub Architecture',
+          'WebSockets',
+          'Rate Limiting at Scale',
+          'Distributed Systems',
+          'Microservices',
+          'Monolith vs Microservices',
+          'Design: URL Shortener',
+          'Design: Chat Application',
+          'Design: Video Streaming',
+          'Design: Social Media Feed',
+          'Design: Food Delivery',
+          'Design: Ride Booking',
+          'Design: Notification System',
+          'Design: File Storage',
+          'Design: Job Portal',
+          'Design: E-Commerce System',
+        ],
+      },
     ],
   },
 ]
@@ -409,20 +626,24 @@ export function Layout({ children, progress }: LayoutProps) {
                         className="sidebar-children"
                         id={`sidebar-children-${itemIndex}`}
                       >
-                        {item.children.map((child) => (
-                          <li key={child}>
-                            <button
-                              type="button"
-                              disabled={!resolveLessonPath(child)}
-                              onClick={() => {
-                                const path = resolveLessonPath(child)
-                                if (path) navigate(path)
-                              }}
-                            >
-                              {child}
-                            </button>
-                          </li>
-                        ))}
+                        {item.children.map((child) => {
+                          const childPath = resolveLessonPath(child)
+                          const isActive = childPath === location.pathname
+                          return (
+                            <li key={child}>
+                              <button
+                                type="button"
+                                className={isActive ? 'active' : ''}
+                                disabled={!childPath}
+                                onClick={() => {
+                                  if (childPath) navigate(childPath)
+                                }}
+                              >
+                                {child}
+                              </button>
+                            </li>
+                          )
+                        })}
                       </ul>
                     ) : null}
                   </div>

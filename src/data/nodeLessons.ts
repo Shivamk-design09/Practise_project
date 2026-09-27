@@ -2,6 +2,16 @@ import type { Lesson } from '../types'
 import { technologyLessons } from './technologyLessons'
 import { javascriptLessons } from './javascriptLessons'
 import { reactTopicLessons } from './reactTopicLessons'
+import { expressLessons } from './expressLessons'
+import { apiLessons } from './apiLessons'
+import { authLessons } from './authLessons'
+import { securityLessons } from './securityLessons'
+import { productionLessons } from './productionLessons'
+import { mongodbLessons } from './mongodbLessons'
+import { postgresqlLessons } from './postgresqlLessons'
+import { redisLessons } from './redisLessons'
+import { dockerLessons } from './dockerLessons'
+import { systemDesignLessons } from './systemDesignLessons'
 
 export const nodeLessons: Lesson[] = [
   {
@@ -1032,12 +1042,35 @@ console.log(typeof globalThis.process)`,
 export const learningLessons: Lesson[] = [
   ...javascriptLessons,
   ...reactTopicLessons,
+  ...expressLessons,
+  ...apiLessons,
+  ...authLessons,
+  ...securityLessons,
+  ...productionLessons,
   ...nodeLessons,
+  ...mongodbLessons,
+  ...postgresqlLessons,
+  ...redisLessons,
+  ...dockerLessons,
+  ...systemDesignLessons,
   ...technologyLessons.map((lesson) => ({
     ...lesson,
     technology: lesson.technology ?? lesson.slug,
   })),
 ]
+
+export {
+  expressLessons,
+  apiLessons,
+  authLessons,
+  securityLessons,
+  productionLessons,
+  mongodbLessons,
+  postgresqlLessons,
+  redisLessons,
+  dockerLessons,
+  systemDesignLessons,
+}
 
 export function lessonPath(lesson: Lesson) {
   return `/learn/${lesson.technology ?? 'node'}/${lesson.slug}`
@@ -1046,3 +1079,4 @@ export function lessonPath(lesson: Lesson) {
 export const lessonBySlug = Object.fromEntries(
   learningLessons.map((lesson) => [lesson.slug, lesson]),
 )
+
